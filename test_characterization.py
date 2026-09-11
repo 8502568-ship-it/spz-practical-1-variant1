@@ -43,14 +43,13 @@ class TestCancelledOrderCharacterization:
         order = _get_order(result, 104)
         assert order["status"] == "cancelled"
 
-    def test_cancelled_order_amount_is_zeroed_out_BUG(self):
-        # CURRENT (buggy) behaviour: the original order amount (350.0)
-        # is discarded and replaced with 0, even though the source data
-        # has amount=350.0. This is exactly the defect described in the
-        # CR: the analytics department cannot see the original order
-        # value for loss reporting.
+    def test_cancelled_order_keeps_original_amount_FIXED(self):
+        # NEW behaviour after CR-2024-0001: the original order amount
+        # (350.0, from the test dataset) is preserved for cancelled
+        # orders instead of being reset to 0, so analytics can report
+        # on lost order value.
         order = _get_order(proc(), 104)
-        assert order["amount"] == 0
+        assert order["amount"] == 350.0
 
     def test_cancelled_order_has_no_tax_or_discount_fields(self):
         # Untouched by CR-2024-0001 - must remain true after the fix.
