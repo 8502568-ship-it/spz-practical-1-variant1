@@ -107,14 +107,16 @@ def proc(params=None):
             })
 
         elif o['status'] == 'cancelled':
-            # cancelled - skip but log
+            # cancelled - not counted in revenue/tax, but the original
+            # amount is preserved (not zeroed) so the analytics team can
+            # report on lost order value. See CR-2024-0001.
             result.append({
                 "order_id": o['id'],
                 "user": u['name'],
-                "amount": 0,
+                "amount": o['amount'],
                 "status": "cancelled",
                 "date": format_date(o['date'])
-            })
+    })
 
         else:
             errors.append({
