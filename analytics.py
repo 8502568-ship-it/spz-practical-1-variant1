@@ -5,14 +5,6 @@ Option B: duplicated calculate_growth implementation.
 Option D: deliberately oversized reporting function.
 """
 
-
-def calculate_growth(current: float, previous: float) -> float:
-    """Calculate percentage growth."""
-    if previous == 0:
-        return 0.0
-    return ((current - previous) / previous) * 100.0
-
-
 # Intentional duplicate for the laboratory baseline (Option B).
 def calculate_growth(current: float, previous: float) -> float:  # noqa: F811
     """Calculate percentage growth (duplicated implementation)."""
