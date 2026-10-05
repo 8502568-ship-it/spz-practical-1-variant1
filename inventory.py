@@ -1,21 +1,15 @@
-"""
-Inventory module for Practical Lab 5.
-Baseline defect for Option A: SQL injection through string interpolation.
-"""
+"""Inventory module for Practical Lab 5."""
 
 import sqlite3
 from typing import Any
 
 
 def get_product_by_id(product_id: str, db_path: str = "inventory.db") -> dict[str, Any] | None:
-    """Return a product by ID.
-
-    The SQL construction is intentionally unsafe for the laboratory baseline.
-    """
+    """Return a product by ID."""
     connection = sqlite3.connect(db_path)
     try:
-        query = f"SELECT id, name, quantity FROM products WHERE id = {product_id}"
-        row = connection.execute(query).fetchone()
+        query = "SELECT id, name, quantity FROM products WHERE id = ?"
+        row = connection.execute(query, (product_id,)).fetchone()
         if row is None:
             return None
         return {"id": row[0], "name": row[1], "quantity": row[2]}
