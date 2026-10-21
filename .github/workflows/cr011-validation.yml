@@ -1,0 +1,28 @@
+name: CR-011 validation
+
+on:
+  push:
+    branches: [main, "fix/CR-011-notify-smtp"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt pytest-cov
+      - name: Run full test suite and coverage
+        run: python -m pytest -v --cov=src --cov-report=term-missing
+      - name: Compile Python sources
+        run: python -m compileall -q src tests test_characterization.py
+      - name: Report Pylint score
+        continue-on-error: true
+        run: python -m pylint src/notify.py --score=y
