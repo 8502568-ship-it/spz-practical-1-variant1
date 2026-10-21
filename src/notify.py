@@ -35,7 +35,7 @@ def send_email(to, subj, body):
         return False
 
 
-def notify_user(user_id, msg_type, data=None):
+def notify_user(user_id, msg_type, data=None):  # pylint: disable=unused-argument
     """Send the email associated with a supported notification type."""
     data = data or {}
     email = data.get("email", "")
@@ -43,19 +43,19 @@ def notify_user(user_id, msg_type, data=None):
         return send_email(
             email,
             "Order Confirmed",
-            "Your order #{} has been confirmed.".format(data.get("order_id")),
+            f"Your order #{data.get('order_id')} has been confirmed.",
         )
     if msg_type == 2:
         return send_email(
             email,
             "Payment Received",
-            "Payment of {} UAH received.".format(data.get("amount")),
+            f"Payment of {data.get('amount')} UAH received.",
         )
     if msg_type == 3:
         return send_email(
             email,
             "Order Cancelled",
-            "Your order #{} was cancelled.".format(data.get("order_id")),
+            f"Your order #{data.get('order_id')} was cancelled.",
         )
     return False
 
@@ -70,11 +70,11 @@ def bulk_notify(users, msg):
                 sent += 1
             else:
                 failed += 1
-        except Exception:
+        except (AttributeError, KeyError, TypeError, ValueError):
             failed += 1
     return {"sent": sent, "failed": failed}
 
 
-def log_notification(user_id, tp, status):
+def log_notification(user_id, tp, status):  # pylint: disable=unused-argument
     """Placeholder for persistent notification logging."""
     return None
