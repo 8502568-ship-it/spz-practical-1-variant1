@@ -1,77 +1,80 @@
-# notify.py
-# Notification system
-# DEPRECATED - use new_notify.py (which doesn't exist yet)
-# kept for reference
+"""Email notification helpers for OrderSystem."""
 
+import os
 import smtplib
-# from email.mime.text import MIMEText  # commented out - breaks on server
+import ssl
+from email.mime.text import MIMEText
 
-# config (move to env someday)
-SMTP_HOST = "smtp.gmail.com"
-SMTP_PORT = 587
-SMTP_USER = "system@company.com"
-SMTP_PASS = "qwerty123"  # yeah yeah, I know
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASS = os.getenv("SMTP_PASS", "")
+SMTP_TIMEOUT = float(os.getenv("SMTP_TIMEOUT", "10"))
 
 
 def send_email(to, subj, body):
-    # TODO: implement properly
-    # old implementation below was removed because it broke prod
-    # try:
-    #     msg = MIMEText(body)
-    #     msg['Subject'] = subj
-    #     msg['From'] = SMTP_USER
-    #     msg['To'] = to
-    #     s = smtplib.SMTP(SMTP_HOST, SMTP_PORT)
-    #     s.starttls()
-    #     s.login(SMTP_USER, SMTP_PASS)
-    #     s.send_message(msg)
-    #     s.quit()
-    #     return True
-    # except Exception as e:
-    #     print("email error:", e)
-    #     return False
-    print(f"[STUB] Would send email to {to}: {subj}")
-    return True
+    """Send an email using STARTTLS; return False if SMTP delivery fails."""
+    if not to:
+        return False
+
+    msg = MIMEText(body, _charset="utf-8")
+    msg["Subject"] = subj
+    msg["From"] = SMTP_USER
+    msg["To"] = to
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=SMTP_TIMEOUT) as server:
+            server.ehlo()
+            server.starttls(context=ssl.create_default_context())
+            server.ehlo()
+            if SMTP_USER:
+                server.login(SMTP_USER, SMTP_PASS)
+            server.send_message(msg)
+        return True
+    except (smtplib.SMTPException, OSError, ValueError):
+        return False
 
 
 def notify_user(user_id, msg_type, data=None):
-    # types: 1=order_confirmed, 2=payment_received, 3=order_cancelled
+    """Send the email associated with a supported notification type."""
+    data = data or {}
+    email = data.get("email", "")
     if msg_type == 1:
-        send_email(
-            data.get('email', ''),
+        return send_email(
+            email,
             "Order Confirmed",
-            f"Your order #{data.get('order_id')} has been confirmed."
+            "Your order #{} has been confirmed.".format(data.get("order_id")),
         )
-    elif msg_type == 2:
-        send_email(
-            data.get('email', ''),
+    if msg_type == 2:
+        return send_email(
+            email,
             "Payment Received",
-            f"Payment of {data.get('amount')} UAH received."
+            "Payment of {} UAH received.".format(data.get("amount")),
         )
-    elif msg_type == 3:
-        send_email(
-            data.get('email', ''),
+    if msg_type == 3:
+        return send_email(
+            email,
             "Order Cancelled",
-            f"Your order #{data.get('order_id')} was cancelled."
+            "Your order #{} was cancelled.".format(data.get("order_id")),
         )
-    # type 4 was removed but code wasn't cleaned up
-    # elif msg_type == 4:
-    #     send_sms(...)
+    return False
 
 
 def bulk_notify(users, msg):
-    # used once in 2021 for promo campaign, kept just in case
+    """Send a message to each user and return sent/failed counts."""
     sent = 0
     failed = 0
-    for u in users:
+    for user in users:
         try:
-            send_email(u.get('email', ''), "Notification", msg)
-            sent += 1
+            if send_email(user.get("email", ""), "Notification", msg):
+                sent += 1
+            else:
+                failed += 1
         except Exception:
             failed += 1
     return {"sent": sent, "failed": failed}
 
 
 def log_notification(user_id, tp, status):
-    # TODO: write to DB (never implemented)
-    pass
+    """Placeholder for persistent notification logging."""
+    return None
