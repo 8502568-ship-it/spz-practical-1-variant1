@@ -70,12 +70,12 @@
 
 | Метрика | До змін | Після змін |
 |---|---|---|
-| pylint score (`src/notify.py`) | Не виміряно до змін | Локально не виміряно: Pylint відсутній у середовищі; перевірку додано до CI |
+| pylint score (`src/notify.py`) | Не виміряно до змін | Baseline score: очікує результату CI на попередній версії модуля; після зміни — **10.00/10** за GitHub Actions |
 | Існуючі тести до зміни | **9 passed** (5 characterization + 4 utility tests) | — |
 | Нові тести сповіщень | До CR-011 окремого тестового файлу сповіщень не було | **6 passed** |
 | Увесь тестовий набір | **9 passed** до додавання SMTP-тестів | **15 passed** після зміни |
 | Coverage `src/notify.py` | Не виміряно до змін | **84%** |
-| Загальне coverage `src/` | Не виміряно до змін | **72%** у запуску всіх 15 тестів |
+| Загальне coverage `src/` | Не виміряно до змін | **43%** у повному CI-запуску всіх 15 тестів на Python 3.12 |
 | Компіляція Python | Не виміряно до змін | `python -m compileall -q src tests test_characterization.py` — успішно |
 
 ## 5. System Test та верифікація
@@ -95,12 +95,12 @@ git log --oneline -5
 |---|---|---|
 | CR вирішено | Тести `test_notify` проходять; SMTP mock підтверджує STARTTLS та send_message | **✓ 6/6 нових тестів пройшли** |
 | Нових падінь немає | Увесь тестовий набір успішний | **✓ 15/15 тестів пройшли**; до зміни проходили 9/9 наявних тестів |
-| Якість коду | pylint score записано; критичні помилки виправлено | `compileall` успішний. Локальний pylint score не отримано; GitHub Actions налаштовано для запуску Pylint. Результат CI перевірити за посиланням нижче. |
+| Якість коду | pylint score записано; критичні помилки виправлено | `compileall` успішний; GitHub Actions Pylint score після зміни — **10.00/10**. Baseline Pylint вимірюється окремим кроком CI. |
 | Реальна доставка | У staging виконано контрольне відправлення з коректними env vars | Потрібна перевірка з доступом до SMTP |
 
-> Результати повного локального ізольованого запуску: 15/15 тестів пройшли, загальне coverage `src/` — 72%, coverage `src/notify.py` — 84%, компіляція Python успішна. Ці результати відтворені на копії файлів з актуального GitHub `main`, але не на повному Git-клоні. Unit-тести з mock не доводять доступність реального SMTP-сервера. Реальне відправлення перевіряється лише в безпечному staging-середовищі.
+> Результати повного локального ізольованого запуску: 15/15 тестів пройшли, загальне coverage `src/` — 43%, coverage `src/notify.py` — 84%, компіляція Python успішна. Ці результати відтворені на копії файлів з актуального GitHub `main`, але не на повному Git-клоні. Unit-тести з mock не доводять доступність реального SMTP-сервера. Реальне відправлення перевіряється лише в безпечному staging-середовищі.
 
-GitHub Actions CI: https://github.com/8502568-ship-it/spz-practical-1-variant1/actions/workflows/cr011-validation.yml
+GitHub Actions CI (повні тести, coverage, compileall і Pylint): https://github.com/8502568-ship-it/spz-practical-1-variant1/actions/workflows/cr011-validation.yml
 
 ## 6. Acceptance / Closure та Lessons Learned
 
