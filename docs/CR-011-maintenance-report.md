@@ -105,6 +105,18 @@ git log --oneline -5
 
 GitHub Actions CI (повні тести, coverage, compileall і Pylint): https://github.com/8502568-ship-it/spz-practical-1-variant1/actions/workflows/cr011-validation.yml
 
+### Git history (`git log --oneline -5`)
+
+```text
+4a01cc6 docs(changelog): record CR-011 SMTP maintenance
+8e7d7ee docs(maintenance): finalize baseline and post-change quality metrics
+60a8249 ci(maintenance): fetch history for baseline quality measurement
+6783c41 docs(maintenance): record full CI coverage and pylint score
+c001323 ci(maintenance): measure baseline and post-change Pylint scores
+```
+
+Changelog запис: [`CHANGELOG.md`](../CHANGELOG.md).
+
 ## 6. Acceptance / Closure та Lessons Learned
 
 | Поле | Заповнення |
