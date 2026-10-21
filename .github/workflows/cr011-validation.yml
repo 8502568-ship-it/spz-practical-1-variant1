@@ -25,7 +25,8 @@ jobs:
         run: python -m compileall -q src tests test_characterization.py
       - name: Measure baseline Pylint score
         run: |
-          git show 72f1dc4:src/notify.py > /tmp/notify_baseline.py
+          git fetch --unshallow origin
+          git show 72f1dc43d4e76a9f027a451333ea85885f861ba3:src/notify.py > /tmp/notify_baseline.py
           python -m pylint /tmp/notify_baseline.py --score=y || true
       - name: Report Pylint score after CR-011
         run: python -m pylint src/notify.py --score=y
