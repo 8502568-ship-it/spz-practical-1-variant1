@@ -24,5 +24,4 @@ jobs:
       - name: Compile Python sources
         run: python -m compileall -q src tests test_characterization.py
       - name: Report Pylint score
-        continue-on-error: true
         run: python -m pylint src/notify.py --score=y
